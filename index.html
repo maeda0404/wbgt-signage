@@ -184,7 +184,10 @@ async function loadWBGT(){
 try{
 
 const response=await fetch(
+"https://api.allorigins.win/raw?url=" +
+encodeURIComponent(
 "https://www.wbgt.env.go.jp/prev15WG/dl/yohou_44132.csv"
+)
 );
 
 const csv=await response.text();
