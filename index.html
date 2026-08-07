@@ -1,1 +1,257 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>京王笹塚 WBGTモニター</title>
 
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:"Yu Gothic","Meiryo",sans-serif;
+}
+
+body{
+background:#dfe7f0;
+width:1080px;
+height:1080px;
+overflow:hidden;
+}
+
+.header{
+background:#1d5fb8;
+color:white;
+height:120px;
+padding:20px 40px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+border-radius:0 0 20px 20px;
+}
+
+.title{
+font-size:56px;
+font-weight:bold;
+}
+
+.clock{
+font-size:52px;
+font-weight:bold;
+}
+
+.main-card{
+background:white;
+margin:20px;
+border:5px solid #ff7a00;
+border-radius:25px;
+padding:20px;
+text-align:center;
+height:320px;
+}
+
+.main-title{
+font-size:50px;
+font-weight:bold;
+}
+
+.wbgt{
+font-size:180px;
+font-weight:bold;
+line-height:1;
+}
+
+.level{
+font-size:70px;
+font-weight:bold;
+margin-top:10px;
+}
+
+.forecast{
+margin:20px;
+overflow:hidden;
+border-radius:25px;
+background:white;
+}
+
+.forecast-header{
+background:#1d4fa8;
+color:white;
+font-size:48px;
+font-weight:bold;
+padding:20px;
+text-align:center;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+font-size:42px;
+}
+
+th{
+background:#d9e4f5;
+color:#1d4fa8;
+padding:20px;
+}
+
+td{
+padding:20px;
+text-align:center;
+border-bottom:1px solid #ddd;
+}
+
+.footer{
+text-align:center;
+font-size:24px;
+padding-top:15px;
+color:#666;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+<div class="title">京王笹塚 WBGT</div>
+<div class="clock" id="clock">--:--:--</div>
+</div>
+
+<div class="main-card">
+<div class="main-title">現在の暑さ指数（WBGT）</div>
+<div id="wbgt" class="wbgt">--</div>
+<div id="level" class="level">読込中...</div>
+</div>
+
+<div class="forecast">
+<div class="forecast-header">
+今日の予測（3時間ごと）
+</div>
+
+<table>
+<thead>
+<tr>
+<th>時刻</th>
+<th>WBGT</th>
+<th>警戒レベル</th>
+</tr>
+</thead>
+
+<tbody id="forecastBody">
+<tr>
+<td colspan="3">読込中...</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="footer">
+環境省暑さ指数（WBGT）データ利用
+</div>
+
+<script>
+
+function updateClock(){
+const now=new Date();
+
+document.getElementById("clock").textContent=
+now.toLocaleTimeString("ja-JP");
+}
+
+setInterval(updateClock,1000);
+updateClock();
+
+function getLevel(value){
+
+if(value>=31)
+return {text:"危険",color:"#ff0000"};
+
+if(value>=28)
+return {text:"厳重警戒",color:"#ff7a00"};
+
+if(value>=25)
+return {text:"警戒",color:"#ffb300"};
+
+if(value>=21)
+return {text:"注意",color:"#0080ff"};
+
+return {text:"ほぼ安全",color:"#00aa00"};
+}
+
+async function loadWBGT(){
+
+try{
+
+const response=await fetch(
+"https://www.wbgt.env.go.jp/prev15WG/dl/yohou_44132.csv"
+);
+
+const csv=await response.text();
+
+const lines=csv.trim().split("\n");
+
+const times=lines[0].split(",");
+
+const values=lines[1].split(",");
+
+const current=Math.round(
+Number(values[2])/10
+);
+
+document.getElementById("wbgt").textContent=current;
+
+const nowLevel=getLevel(current);
+
+const level=document.getElementById("level");
+
+level.innerText=nowLevel.text;
+level.style.color=nowLevel.color;
+
+let html="";
+
+for(let i=2;i<Math.min(values.length,7);i++){
+
+const rawTime=times[i];
+
+const hh=rawTime.substring(
+rawTime.length-2
+);
+
+const wbgt=Math.round(
+Number(values[i])/10
+);
+
+const rowLevel=getLevel(wbgt);
+
+html+=`
+<tr>
+<td>${hh}:00</td>
+<td>${wbgt}</td>
+<td style="color:${rowLevel.color};font-weight:bold">
+${rowLevel.text}
+</td>
+</tr>
+`;
+}
+
+document.getElementById("forecastBody").innerHTML=
+html;
+
+}catch(e){
+
+document.getElementById("forecastBody").innerHTML=
+"<tr><td colspan='3'>データ取得失敗</td></tr>";
+
+console.error(e);
+}
+}
+
+loadWBGT();
+
+setInterval(loadWBGT,300000);
+
+</script>
+
+</body>
+</html>
