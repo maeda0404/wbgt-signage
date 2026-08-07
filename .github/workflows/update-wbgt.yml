@@ -1,8 +1,6 @@
 name: Update WBGT Data
 
 on:
-  schedule:
-    - cron: '0 * * * *'
   workflow_dispatch:
 
 permissions:
@@ -19,13 +17,11 @@ jobs:
         run: |
           mkdir -p data
 
-          cat > data/wbgt.json << EOF
-          {
-            "updated":"$(date)",
+          echo '{
+            "updated":"test",
             "wbgt":30,
             "level":"厳重警戒"
-          }
-          EOF
+          }' > data/wbgt.json
 
       - name: Commit
         run: |
