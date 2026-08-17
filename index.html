@@ -1,260 +1,691 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>京王笹塚 WBGTモニター</title>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=1080, height=1080, initial-scale=1.0"
+  >
 
-<style>
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:"Yu Gothic","Meiryo",sans-serif;
-}
+  <title>東京WBGTサイネージ</title>
 
-body{
-background:#dfe7f0;
-width:1080px;
-height:1080px;
-overflow:hidden;
-}
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Yu Gothic", "Meiryo", sans-serif;
+    }
 
-.header{
-background:#1d5fb8;
-color:white;
-height:120px;
-padding:20px 40px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-border-radius:0 0 20px 20px;
-}
+    html,
+    body {
+      width: 1080px;
+      height: 1080px;
+      background: #eef2f6;
+      overflow: hidden;
+    }
 
-.title{
-font-size:56px;
-font-weight:bold;
-}
+    body {
+      padding: 20px;
+    }
 
-.clock{
-font-size:52px;
-font-weight:bold;
-}
+    .header {
+      width: 1040px;
+      height: 110px;
+      padding: 0 35px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #1565c0;
+      color: #ffffff;
+      border-radius: 20px;
+      font-size: 46px;
+      font-weight: bold;
+    }
 
-.main-card{
-background:white;
-margin:20px;
-border:5px solid #ff7a00;
-border-radius:25px;
-padding:20px;
-text-align:center;
-height:320px;
-}
+    #clock {
+      font-size: 42px;
+    }
 
-.main-title{
-font-size:50px;
-font-weight:bold;
-}
+    .current {
+      width: 1040px;
+      height: 350px;
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      border: 5px solid #ff8c00;
+      border-radius: 20px;
+    }
 
-.wbgt{
-font-size:180px;
-font-weight:bold;
-line-height:1;
-}
+    .current-title {
+      margin-bottom: 35px;
+      font-size: 42px;
+      font-weight: bold;
+    }
 
-.level{
-font-size:70px;
-font-weight:bold;
-margin-top:10px;
-}
+    .current-value {
+      font-size: 150px;
+      font-weight: bold;
+      line-height: 1;
+    }
 
-.forecast{
-margin:20px;
-overflow:hidden;
-border-radius:25px;
-background:white;
-}
+    .current-level {
+      margin-top: 25px;
+      font-size: 56px;
+      font-weight: bold;
+    }
 
-.forecast-header{
-background:#1d4fa8;
-color:white;
-font-size:48px;
-font-weight:bold;
-padding:20px;
-text-align:center;
-}
+    .forecast {
+      width: 1040px;
+      height: 470px;
+      margin-top: 20px;
+      background: #ffffff;
+      overflow: hidden;
+      border-radius: 20px;
+    }
 
-table{
-width:100%;
-border-collapse:collapse;
-font-size:42px;
-}
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #ffffff;
+    }
 
-th{
-background:#d9e4f5;
-color:#1d4fa8;
-padding:20px;
-}
+    th {
+      height: 70px;
+      padding: 12px;
+      background: #0d47a1;
+      color: #ffffff;
+      font-size: 30px;
+    }
 
-td{
-padding:20px;
-text-align:center;
-border-bottom:1px solid #ddd;
-}
+    td {
+      height: 64px;
+      padding: 12px;
+      border-bottom: 1px solid #dddddd;
+      font-size: 28px;
+      text-align: center;
+    }
 
-.footer{
-text-align:center;
-font-size:24px;
-padding-top:15px;
-color:#666;
-}
-</style>
+    .footer {
+      width: 1040px;
+      height: 70px;
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      border-radius: 20px;
+      color: #666666;
+      font-size: 24px;
+    }
+
+    .error {
+      color: #d00000;
+      font-weight: bold;
+    }
+  </style>
 </head>
 
 <body>
+  <div class="header">
+    <div>東京（44132）WBGT</div>
+    <div id="clock">--:--:--</div>
+  </div>
 
-<div class="header">
-<div class="title">京王笹塚 WBGT</div>
-<div class="clock" id="clock">--:--:--</div>
-</div>
+  <div class="current" id="currentPanel">
+    <div class="current-title">
+      現在の暑さ指数（WBGT）
+    </div>
 
-<div class="main-card">
-<div class="main-title">現在の暑さ指数（WBGT）</div>
-<div id="wbgt" class="wbgt">--</div>
-<div id="level" class="level">読込中...</div>
-</div>
+    <div id="wbgtNow" class="current-value">
+      --
+    </div>
 
-<div class="forecast">
-<div class="forecast-header">
-今日の予測（3時間ごと）
-</div>
+    <div id="wbgtLevel" class="current-level">
+      取得中...
+    </div>
+  </div>
 
-<table>
-<thead>
-<tr>
-<th>時刻</th>
-<th>WBGT</th>
-<th>警戒レベル</th>
-</tr>
-</thead>
+  <div class="forecast">
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 33%;">時刻</th>
+          <th style="width: 34%;">WBGT</th>
+          <th style="width: 33%;">警戒レベル</th>
+        </tr>
+      </thead>
 
-<tbody id="forecastBody">
-<tr>
-<td colspan="3">読込中...</td>
-</tr>
-</tbody>
-</table>
-</div>
+      <tbody id="forecastBody">
+        <tr>
+          <td colspan="3">
+            WBGTデータ取得中...
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
-<div class="footer">
-環境省暑さ指数（WBGT）データ利用
-</div>
+  <div class="footer" id="footer">
+    環境省WBGT予測値 東京44132
+  </div>
 
-<script>
+  <script>
+    "use strict";
 
-function updateClock(){
-const now=new Date();
+    const WBGT_LOCAL_URL = "./wbgt.csv";
 
-document.getElementById("clock").textContent=
-now.toLocaleTimeString("ja-JP");
-}
+    function updateClock() {
+      const now = new Date();
 
-setInterval(updateClock,1000);
-updateClock();
+      const timeText = now.toLocaleTimeString("ja-JP", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false
+      });
 
-function getLevel(value){
+      document.getElementById("clock").textContent = timeText;
+    }
 
-if(value>=31)
-return {text:"危険",color:"#ff0000"};
+    function getLevel(value) {
+      if (value >= 31) {
+        return {
+          text: "危険",
+          color: "#d50000",
+          borderColor: "#d50000",
+          backgroundColor: "#fff1f1"
+        };
+      }
 
-if(value>=28)
-return {text:"厳重警戒",color:"#ff7a00"};
+      if (value >= 28) {
+        return {
+          text: "厳重警戒",
+          color: "#ef6c00",
+          borderColor: "#ef6c00",
+          backgroundColor: "#fff7ed"
+        };
+      }
 
-if(value>=25)
-return {text:"警戒",color:"#ffb300"};
+      if (value >= 25) {
+        return {
+          text: "警戒",
+          color: "#f9a825",
+          borderColor: "#f9a825",
+          backgroundColor: "#fffbea"
+        };
+      }
 
-if(value>=21)
-return {text:"注意",color:"#0080ff"};
+      if (value >= 21) {
+        return {
+          text: "注意",
+          color: "#2e7d32",
+          borderColor: "#2e7d32",
+          backgroundColor: "#f1fff3"
+        };
+      }
 
-return {text:"ほぼ安全",color:"#00aa00"};
-}
+      return {
+        text: "ほぼ安全",
+        color: "#1565c0",
+        borderColor: "#1565c0",
+        backgroundColor: "#f2f7ff"
+      };
+    }
 
-async function loadWBGT(){
+    function normalizeText(text) {
+      return text
+        .replace(/^\uFEFF/, "")
+        .replace(/\r\n/g, "\n")
+        .replace(/\r/g, "\n");
+    }
 
-try{
+    function parseCsvLine(line) {
+      const values = [];
+      let value = "";
+      let insideQuote = false;
 
-const response=await fetch(
-"https://api.allorigins.win/raw?url=" +
-encodeURIComponent(
-"https://www.wbgt.env.go.jp/prev15WG/dl/yohou_44132.csv"
-)
-);
+      for (let i = 0; i < line.length; i++) {
+        const character = line[i];
 
-const csv=await response.text();
+        if (character === '"') {
+          if (insideQuote && line[i + 1] === '"') {
+            value += '"';
+            i++;
+          } else {
+            insideQuote = !insideQuote;
+          }
+        } else if (character === "," && !insideQuote) {
+          values.push(value.trim());
+          value = "";
+        } else {
+          value += character;
+        }
+      }
 
-const lines=csv.trim().split("\n");
+      values.push(value.trim());
+      return values;
+    }
 
-const times=lines[0].split(",");
+    function findColumnIndex(headers, candidates) {
+      const normalizedHeaders = headers.map(function(header) {
+        return header
+          .replace(/\s/g, "")
+          .replace(/["']/g, "")
+          .toLowerCase();
+      });
 
-const values=lines[1].split(",");
+      for (const candidate of candidates) {
+        const normalizedCandidate = candidate
+          .replace(/\s/g, "")
+          .toLowerCase();
 
-const current=Math.round(
-Number(values[2])/10
-);
+        const exactIndex =
+          normalizedHeaders.indexOf(normalizedCandidate);
 
-document.getElementById("wbgt").textContent=current;
+        if (exactIndex !== -1) {
+          return exactIndex;
+        }
+      }
 
-const nowLevel=getLevel(current);
+      for (let i = 0; i < normalizedHeaders.length; i++) {
+        for (const candidate of candidates) {
+          const normalizedCandidate = candidate
+            .replace(/\s/g, "")
+            .toLowerCase();
 
-const level=document.getElementById("level");
+          if (
+            normalizedHeaders[i].includes(normalizedCandidate)
+          ) {
+            return i;
+          }
+        }
+      }
 
-level.innerText=nowLevel.text;
-level.style.color=nowLevel.color;
+      return -1;
+    }
 
-let html="";
+    function parseDateTime(dateText, timeText) {
+      const dateValue = String(dateText || "").trim();
+      let timeValue = String(timeText || "").trim();
 
-for(let i=2;i<Math.min(values.length,7);i++){
+      if (!dateValue) {
+        return null;
+      }
 
-const rawTime=times[i];
+      if (/^\d{1,2}$/.test(timeValue)) {
+        timeValue = timeValue.padStart(2, "0") + ":00";
+      }
 
-const hh=rawTime.substring(
-rawTime.length-2
-);
+      if (/^\d{3,4}$/.test(timeValue)) {
+        timeValue =
+          timeValue.padStart(4, "0").slice(0, 2) +
+          ":" +
+          timeValue.padStart(4, "0").slice(2, 4);
+      }
 
-const wbgt=Math.round(
-Number(values[i])/10
-);
+      const normalizedDate = dateValue
+        .replace(/年/g, "/")
+        .replace(/月/g, "/")
+        .replace(/日/g, "")
+        .replace(/-/g, "/");
 
-const rowLevel=getLevel(wbgt);
+      const match = normalizedDate.match(
+        /(\d{4})\/(\d{1,2})\/(\d{1,2})/
+      );
 
-html+=`
-<tr>
-<td>${hh}:00</td>
-<td>${wbgt}</td>
-<td style="color:${rowLevel.color};font-weight:bold">
-${rowLevel.text}
-</td>
-</tr>
-`;
-}
+      if (!match) {
+        return null;
+      }
 
-document.getElementById("forecastBody").innerHTML=
-html;
+      const year = Number(match[1]);
+      const month = Number(match[2]) - 1;
+      const day = Number(match[3]);
 
-}catch(e){
+      const timeMatch = timeValue.match(
+        /(\d{1,2}):?(\d{2})?/
+      );
 
-document.getElementById("forecastBody").innerHTML=
-"<tr><td colspan='3'>データ取得失敗</td></tr>";
+      const hour = timeMatch ? Number(timeMatch[1]) : 0;
+      const minute =
+        timeMatch && timeMatch[2]
+          ? Number(timeMatch[2])
+          : 0;
 
-console.error(e);
-}
-}
+      const result = new Date(
+        year,
+        month,
+        day,
+        hour,
+        minute,
+        0
+      );
 
-loadWBGT();
+      if (Number.isNaN(result.getTime())) {
+        return null;
+      }
 
-setInterval(loadWBGT,300000);
+      return result;
+    }
 
-</script>
+    function parseWbgtCsv(csvText) {
+      const lines = normalizeText(csvText)
+        .split("\n")
+        .map(function(line) {
+          return line.trim();
+        })
+        .filter(function(line) {
+          return line.length > 0;
+        });
 
+      if (lines.length < 2) {
+        throw new Error(
+          "CSVに表示可能なデータがありません"
+        );
+      }
+
+      let headerRowIndex = -1;
+      let headers = [];
+
+      for (
+        let rowIndex = 0;
+        rowIndex < Math.min(lines.length, 20);
+        rowIndex++
+      ) {
+        const possibleHeaders =
+          parseCsvLine(lines[rowIndex]);
+
+        const hasWbgt = possibleHeaders.some(function(value) {
+          return /wbgt|暑さ指数/i.test(value);
+        });
+
+        if (hasWbgt) {
+          headerRowIndex = rowIndex;
+          headers = possibleHeaders;
+          break;
+        }
+      }
+
+      if (headerRowIndex === -1) {
+        throw new Error(
+          "CSVの見出し行を判定できません"
+        );
+      }
+
+      const dateIndex = findColumnIndex(headers, [
+        "年月日",
+        "日付",
+        "date"
+      ]);
+
+      const timeIndex = findColumnIndex(headers, [
+        "時刻",
+        "時間",
+        "time",
+        "hour"
+      ]);
+
+      const wbgtIndex = findColumnIndex(headers, [
+        "WBGT",
+        "暑さ指数",
+        "予測値"
+      ]);
+
+      if (wbgtIndex === -1) {
+        throw new Error(
+          "CSV内にWBGT列が見つかりません"
+        );
+      }
+
+      const records = [];
+
+      for (
+        let rowIndex = headerRowIndex + 1;
+        rowIndex < lines.length;
+        rowIndex++
+      ) {
+        const columns = parseCsvLine(lines[rowIndex]);
+
+        const wbgtText = columns[wbgtIndex];
+
+        if (wbgtText === undefined) {
+          continue;
+        }
+
+        const wbgtValue = Number(
+          String(wbgtText).replace(/[^\d.-]/g, "")
+        );
+
+        if (!Number.isFinite(wbgtValue)) {
+          continue;
+        }
+
+        let dateTime = null;
+
+        if (dateIndex !== -1) {
+          dateTime = parseDateTime(
+            columns[dateIndex],
+            timeIndex !== -1
+              ? columns[timeIndex]
+              : ""
+          );
+        }
+
+        if (
+          !dateTime &&
+          timeIndex !== -1 &&
+          columns[timeIndex]
+        ) {
+          const today = new Date();
+
+          const dateString =
+            today.getFullYear() +
+            "/" +
+            String(today.getMonth() + 1).padStart(2, "0") +
+            "/" +
+            String(today.getDate()).padStart(2, "0");
+
+          dateTime = parseDateTime(
+            dateString,
+            columns[timeIndex]
+          );
+        }
+
+        if (!dateTime) {
+          continue;
+        }
+
+        records.push({
+          dateTime: dateTime,
+          wbgt: wbgtValue
+        });
+      }
+
+      records.sort(function(a, b) {
+        return a.dateTime - b.dateTime;
+      });
+
+      if (records.length === 0) {
+        throw new Error(
+          "日時とWBGT値を読み取れませんでした"
+        );
+      }
+
+      return records;
+    }
+
+    function selectCurrentRecord(records) {
+      const now = new Date();
+
+      let pastRecords = records.filter(function(record) {
+        return record.dateTime <= now;
+      });
+
+      if (pastRecords.length > 0) {
+        return pastRecords[pastRecords.length - 1];
+      }
+
+      return records[0];
+    }
+
+    function selectForecastRecords(records, currentRecord) {
+      const futureRecords = records.filter(function(record) {
+        return record.dateTime > currentRecord.dateTime;
+      });
+
+      return futureRecords.slice(0, 6);
+    }
+
+    function formatDateTime(dateTime) {
+      return dateTime.toLocaleString("ja-JP", {
+        month: "numeric",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
+      });
+    }
+
+    function displayCurrent(record) {
+      const level = getLevel(record.wbgt);
+      const currentPanel =
+        document.getElementById("currentPanel");
+
+      document.getElementById("wbgtNow").textContent =
+        record.wbgt.toFixed(1);
+
+      document.getElementById("wbgtLevel").textContent =
+        level.text;
+
+      document.getElementById("wbgtNow").style.color =
+        level.color;
+
+      document.getElementById("wbgtLevel").style.color =
+        level.color;
+
+      currentPanel.style.borderColor =
+        level.borderColor;
+
+      currentPanel.style.backgroundColor =
+        level.backgroundColor;
+    }
+
+    function displayForecast(records) {
+      const forecastBody =
+        document.getElementById("forecastBody");
+
+      forecastBody.innerHTML = "";
+
+      if (records.length === 0) {
+        forecastBody.innerHTML =
+          '<tr><td colspan="3">' +
+          "これより先の予測値がありません" +
+          "</td></tr>";
+
+        return;
+      }
+
+      records.forEach(function(record) {
+        const level = getLevel(record.wbgt);
+        const row = document.createElement("tr");
+
+        const timeCell = document.createElement("td");
+        const wbgtCell = document.createElement("td");
+        const levelCell = document.createElement("td");
+
+        timeCell.textContent =
+          formatDateTime(record.dateTime);
+
+        wbgtCell.textContent =
+          record.wbgt.toFixed(1);
+
+        levelCell.textContent =
+          level.text;
+
+        wbgtCell.style.color = level.color;
+        wbgtCell.style.fontWeight = "bold";
+
+        levelCell.style.color = level.color;
+        levelCell.style.fontWeight = "bold";
+
+        row.appendChild(timeCell);
+        row.appendChild(wbgtCell);
+        row.appendChild(levelCell);
+
+        forecastBody.appendChild(row);
+      });
+    }
+
+    function showError(message) {
+      document.getElementById("wbgtNow").textContent =
+        "--";
+
+      const levelElement =
+        document.getElementById("wbgtLevel");
+
+      levelElement.textContent = "取得失敗";
+      levelElement.className = "current-level error";
+
+      document.getElementById("forecastBody").innerHTML =
+        '<tr><td colspan="3" class="error">' +
+        message +
+        "</td></tr>";
+
+      document.getElementById("footer").textContent =
+        "wbgt.csvの配置とGitHub Actionsを確認してください";
+    }
+
+    async function loadWbgtData() {
+      try {
+        const requestUrl =
+          WBGT_LOCAL_URL + "?t=" + Date.now();
+
+        const response = await fetch(requestUrl, {
+          cache: "no-store"
+        });
+
+        if (!response.ok) {
+          throw new Error(
+            "wbgt.csvを取得できません HTTP " +
+            response.status
+          );
+        }
+
+        const csvText = await response.text();
+        const records = parseWbgtCsv(csvText);
+        const currentRecord =
+          selectCurrentRecord(records);
+
+        displayCurrent(currentRecord);
+
+        displayForecast(
+          selectForecastRecords(
+            records,
+            currentRecord
+          )
+        );
+
+        document.getElementById("footer").textContent =
+          "環境省WBGT予測値 東京44132　更新：" +
+          new Date().toLocaleTimeString("ja-JP", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false
+          });
+      } catch (error) {
+        console.error(error);
+        showError(error.message);
+      }
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    loadWbgtData();
+    setInterval(loadWbgtData, 10 * 60 * 1000);
+  </script>
 </body>
 </html>
