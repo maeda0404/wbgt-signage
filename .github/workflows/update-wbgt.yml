@@ -2,6 +2,8 @@ name: Update WBGT Data
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "10 * * * *"
 
 permissions:
   contents: write
@@ -11,25 +13,198 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Create WBGT JSON
+      - name: Download Tokyo WBGT forecast
         run: |
-          mkdir -p data
+          curl \
+            --fail \
+            --silent \
+            --show-error \
+            --location \
+            --retry 3 \
+            "https://www.wbgt.env.go.jp/prev15WG/dl/yohou_44132.csv" \
+            --output source.csv
 
-          echo '{
-            "updated":"test",
-            "wbgt":30,
-            "level":"厳重警戒"
-          }' > data/wbgt.json
+          echo "Downloaded source.csv"
+          ls -l source.csv
+          head -n 2 source.csv
 
-      - name: Commit
+      - name: Convert WBGT forecast
         run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
+          python3 <<'PY'
+          import csv
+          from datetime import datetime, timedelta
+          from pathlib import Path
 
-          git add data/wbgt.json
+          source_path = Path("source.csv")
+          output_path = Path("wbgt.csv")
 
-          git diff --cached --quiet || git commit -m "Update WBGT"
+          if not source_path.exists():
+              raise FileNotFoundError(
+                  "source.csvが見つかりません"
+              )
+
+          if source_path.stat().st_size == 0:
+              raise ValueError(
+                  "source.csvが空です"
+              )
+
+          with source_path.open(
+              "r",
+              encoding="ascii",
+              errors="strict",
+              newline=""
+          ) as source_file:
+              rows = list(csv.reader(source_file))
+
+          if len(rows) < 2:
+              raise ValueError(
+                  "環境省CSVに必要な行がありません"
+              )
+
+          forecast_times = rows[0][2:]
+          forecast_values = rows[1][2:]
+
+          if not forecast_times:
+              raise ValueError(
+                  "予測時刻がありません"
+              )
+
+          if not forecast_values:
+              raise ValueError(
+                  "WBGT予測値がありません"
+              )
+
+          output_rows = [
+              ["年月日", "時刻", "WBGT"]
+          ]
+
+          for time_text, value_text in zip(
+              forecast_times,
+              forecast_values
+          ):
+              time_text = time_text.strip()
+              value_text = value_text.strip()
+
+              if not time_text or not value_text:
+                  continue
+
+              if len(time_text) != 10:
+                  print(
+                      "予測時刻をスキップ:",
+                      repr(time_text)
+                  )
+                  continue
+
+              try:
+                  year = int(time_text[0:4])
+                  month = int(time_text[4:6])
+                  day = int(time_text[6:8])
+                  hour = int(time_text[8:10])
+                  raw_wbgt = int(value_text)
+              except ValueError:
+                  print(
+                      "数値変換できないデータをスキップ:",
+                      repr(time_text),
+                      repr(value_text)
+                  )
+                  continue
+
+              if hour == 24:
+                  forecast_datetime = (
+                      datetime(year, month, day)
+                      + timedelta(days=1)
+                  )
+              elif 0 <= hour <= 23:
+                  forecast_datetime = datetime(
+                      year,
+                      month,
+                      day,
+                      hour,
+                      0
+                  )
+              else:
+                  print(
+                      "不正な時刻をスキップ:",
+                      repr(time_text)
+                  )
+                  continue
+
+              wbgt_value = raw_wbgt / 10
+
+              output_rows.append([
+                  forecast_datetime.strftime(
+                      "%Y/%m/%d"
+                  ),
+                  forecast_datetime.strftime(
+                      "%H:%M"
+                  ),
+                  f"{wbgt_value:.1f}"
+              ])
+
+          if len(output_rows) <= 1:
+              raise ValueError(
+                  "変換可能なWBGT予測値がありません"
+              )
+
+          with output_path.open(
+              "w",
+              encoding="utf-8",
+              newline=""
+          ) as output_file:
+              writer = csv.writer(
+                  output_file,
+                  lineterminator="\n"
+              )
+              writer.writerows(output_rows)
+
+          print(
+              f"wbgt.csvへ"
+              f"{len(output_rows) - 1}件を保存しました"
+          )
+
+          with output_path.open(
+              "r",
+              encoding="utf-8"
+          ) as check_file:
+              print(check_file.read())
+          PY
+
+      - name: Remove old test data
+        run: |
+          rm -f data/wbgt.json
+
+          if [ -d "data" ] && \
+             [ -z "$(ls -A data 2>/dev/null)" ]; then
+            rmdir data
+          fi
+
+      - name: Commit WBGT CSV
+        run: |
+          git config \
+            user.name \
+            "github-actions[bot]"
+
+          git config \
+            user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add wbgt.csv
+
+          if [ -e "data/wbgt.json" ]; then
+            git add data/wbgt.json
+          else
+            git add -A data 2>/dev/null || true
+          fi
+
+          if git diff --cached --quiet; then
+            echo "更新内容はありません"
+            exit 0
+          fi
+
+          git commit \
+            -m "Update Tokyo WBGT data"
 
           git push
