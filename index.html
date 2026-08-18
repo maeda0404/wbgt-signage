@@ -176,6 +176,25 @@ tbody tr:last-child td {
       color: #d00000;
       font-weight: bold;
     }
+
+/* ===== サイネージ表示サイズ調整 ===== */
+html {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #ffffff;
+}
+
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+
+  /* ページ全体を90％に縮小 */
+  transform: scale(0.90);
+  transform-origin: top left;
+}
   </style>
 </head>
 
