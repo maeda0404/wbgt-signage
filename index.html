@@ -1,371 +1,360 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
- <meta charset="UTF-8">
- <meta
-  name="viewport"
-  content="width=device-width, initial-scale=1.0"
->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>京王笹塚 WBGTサイネージ</title>
 
-  <title>東京WBGTサイネージ</title>
-<style>
-  :root {
-    --page-gap: clamp(6px, 1.2vh, 12px);
-    --page-padding: clamp(6px, 1.2vw, 12px);
-    --radius: clamp(10px, 1.6vw, 18px);
-    --header-blue: #1565c0;
-    --table-blue: #0d47a1;
-  }
-
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Yu Gothic", "Meiryo", sans-serif;
-  }
-
-  html,
-  body {
-    width: 100%;
-    height: 100%;
-    min-height: 100%;
-    background: #eef2f6;
-    overflow: hidden;
-  }
-
-  body {
-    padding: var(--page-padding);
-    display: grid;
-    grid-template-rows:
-      clamp(58px, 10vh, 82px)
-      clamp(180px, 34vh, 250px)
-      minmax(0, 1fr)
-      clamp(36px, 7vh, 50px);
-    gap: var(--page-gap);
-  }
-
-  /* =========================
-     ヘッダー
-     ========================= */
-
-  .header {
-    width: 100%;
-    min-width: 0;
-    height: 100%;
-    padding: 0 clamp(14px, 3vw, 28px);
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 15px;
-
-    background: var(--header-blue);
-    color: #ffffff;
-    border-radius: var(--radius);
-
-    font-size: clamp(22px, 3.4vw, 38px);
-    font-weight: bold;
-    line-height: 1.1;
-    white-space: nowrap;
-    overflow: hidden;
-  }
-
-  .header > div:first-child {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  #clock {
-    flex-shrink: 0;
-    font-size: clamp(20px, 3vw, 34px);
-    font-variant-numeric: tabular-nums;
-  }
-
-  /* =========================
-     現在値
-     ========================= */
-
-  .current {
-    width: 100%;
-    min-width: 0;
-    height: 100%;
-    padding: clamp(8px, 1.5vh, 16px)
-             clamp(12px, 2vw, 24px);
-
-    background: #ffffff;
-    border: clamp(3px, 0.5vw, 5px) solid #ff8c00;
-    border-radius: var(--radius);
-
-    display: grid;
-    grid-template-rows:
-      auto
-      minmax(0, 1fr)
-      auto;
-    align-items: center;
-    justify-items: center;
-
-    overflow: hidden;
-  }
-
-  .current-title {
-    margin: 0;
-    font-size: clamp(21px, 3.2vw, 34px);
-    font-weight: bold;
-    line-height: 1.15;
-    text-align: center;
-    white-space: nowrap;
-  }
-
-  .current-value {
-    margin: 0;
-    font-size: clamp(76px, 13vh, 118px);
-    font-weight: bold;
-    line-height: 0.95;
-    text-align: center;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .current-level {
-    margin: 0;
-    font-size: clamp(28px, 5vh, 44px);
-    font-weight: bold;
-    line-height: 1.1;
-    text-align: center;
-    white-space: nowrap;
-  }
-
-  /* =========================
-     予測表
-     ========================= */
-
-  .forecast {
-    width: 100%;
-    min-width: 0;
-    height: 100%;
-
-    background: #ffffff;
-    border-radius: var(--radius);
-    overflow: hidden;
-  }
-
-  table {
-    width: 100%;
-    height: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
-    background: #ffffff;
-  }
-
-  thead {
-    height: clamp(42px, 8vh, 56px);
-  }
-
-  thead tr {
-    height: 100%;
-  }
-
-  th {
-    height: 100%;
-    padding: 5px clamp(3px, 1vw, 10px);
-
-    background: var(--table-blue);
-    color: #ffffff;
-    border-right: 1px solid rgba(255, 255, 255, 0.18);
-
-    font-size: clamp(17px, 2.6vw, 25px);
-    font-weight: bold;
-    line-height: 1.1;
-    text-align: center;
-    vertical-align: middle;
-    white-space: nowrap;
-    overflow: hidden;
-  }
-
-  th:last-child {
-    border-right: none;
-  }
-
-  tbody {
-    height: calc(100% - clamp(42px, 8vh, 56px));
-  }
-
-  tbody tr {
-    height: calc(100% / 6);
-  }
-
-  td {
-    padding: 4px clamp(3px, 1vw, 10px);
-    border-bottom: 1px solid #dddddd;
-
-    font-size: clamp(15px, 2.25vw, 22px);
-    line-height: 1.1;
-    text-align: center;
-    vertical-align: middle;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  tbody tr:last-child td {
-    border-bottom: none;
-  }
-
-  /* 列幅 */
-  th:nth-child(1),
-  td:nth-child(1) {
-    width: 38% !important;
-  }
-
-  th:nth-child(2),
-  td:nth-child(2) {
-    width: 24% !important;
-  }
-
-  th:nth-child(3),
-  td:nth-child(3) {
-    width: 38% !important;
-  }
-
-  /* =========================
-     フッター
-     ========================= */
-
-  .footer {
-    width: 100%;
-    min-width: 0;
-    height: 100%;
-    padding: 0 clamp(8px, 2vw, 18px);
-
-    background: #ffffff;
-    border-radius: var(--radius);
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    color: #666666;
-    font-size: clamp(12px, 1.9vw, 18px);
-    line-height: 1.2;
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .error {
-    color: #d00000;
-    font-weight: bold;
-  }
-
-  /* =========================
-     横幅が特に狭い場合
-     ========================= */
-
-  @media screen and (max-width: 720px) {
-    body {
-      grid-template-rows:
-        clamp(54px, 10vh, 68px)
-        clamp(170px, 33vh, 215px)
-        minmax(0, 1fr)
-        clamp(34px, 6vh, 42px);
+  <style>
+    :root {
+      --page-gap: clamp(6px, 1vh, 10px);
+      --page-padding: clamp(6px, 1vw, 10px);
+      --radius: clamp(10px, 1.4vw, 18px);
+      --header-blue: #1565c0;
+      --table-blue: #0d47a1;
     }
 
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Yu Gothic", "Meiryo", sans-serif;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      min-height: 100%;
+      background: #eef2f6;
+      overflow: hidden;
+    }
+
+    body {
+      padding: var(--page-padding);
+      display: grid;
+      grid-template-rows:
+        clamp(54px, 9vh, 76px)
+        clamp(132px, 23vh, 188px)
+        minmax(0, 1fr)
+        clamp(32px, 5.5vh, 44px);
+      gap: var(--page-gap);
+    }
+
+    /* ヘッダー */
     .header {
-      padding: 0 14px;
-      font-size: clamp(19px, 4vw, 27px);
+      width: 100%;
+      min-width: 0;
+      height: 100%;
+      padding: 0 clamp(14px, 3vw, 28px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      background: var(--header-blue);
+      color: #ffffff;
+      border-radius: var(--radius);
+      font-size: clamp(22px, 3.4vw, 38px);
+      font-weight: 700;
+      line-height: 1.1;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .header > div:first-child {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     #clock {
-      font-size: clamp(18px, 3.7vw, 25px);
+      flex-shrink: 0;
+      font-size: clamp(20px, 3vw, 34px);
+      font-variant-numeric: tabular-nums;
     }
 
-    .current-title {
-      font-size: clamp(19px, 4vw, 27px);
-    }
-
-    .current-value {
-      font-size: clamp(68px, 12vh, 92px);
-    }
-
-    .current-level {
-      font-size: clamp(25px, 5vh, 34px);
-    }
-
-    th {
-      font-size: clamp(15px, 3.2vw, 20px);
-    }
-
-    td {
-      font-size: clamp(13px, 2.8vw, 18px);
-    }
-  }
-
-  /* =========================
-     高さが低い埋め込み枠
-     ========================= */
-
-  @media screen and (max-height: 700px) {
-    body {
-      grid-template-rows:
-        58px
-        190px
-        minmax(0, 1fr)
-        36px;
-      gap: 7px;
-      padding: 7px;
-    }
-
-    .header {
-      border-radius: 12px;
-      font-size: clamp(21px, 3.2vw, 30px);
-    }
-
-    #clock {
-      font-size: clamp(19px, 2.8vw, 27px);
-    }
-
+    /* 現在値 */
     .current {
-      border-radius: 12px;
-      padding: 8px 16px;
+      width: 100%;
+      min-width: 0;
+      height: 100%;
+      padding: clamp(6px, 1vh, 11px) clamp(14px, 2vw, 26px);
+      background: #ffffff;
+      border: clamp(3px, 0.45vw, 5px) solid #ff8c00;
+      border-radius: var(--radius);
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      align-items: center;
+      justify-items: center;
+      overflow: hidden;
     }
 
     .current-title {
-      font-size: clamp(20px, 2.8vw, 28px);
+      margin: 0;
+      font-size: clamp(19px, 2.7vw, 30px);
+      font-weight: 700;
+      line-height: 1.1;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .current-main {
+      width: 100%;
+      min-width: 0;
+      height: 100%;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+      align-items: center;
+      justify-items: center;
+      column-gap: clamp(14px, 4vw, 54px);
     }
 
     .current-value {
-      font-size: clamp(70px, 13vh, 96px);
+      margin: 0;
+      font-size: clamp(72px, 12vh, 112px);
+      font-weight: 800;
+      line-height: 0.9;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
     }
 
     .current-level {
-      font-size: clamp(27px, 4.6vh, 36px);
+      margin: 0;
+      font-size: clamp(36px, 6.5vh, 64px);
+      font-weight: 800;
+      line-height: 1;
+      text-align: center;
+      white-space: nowrap;
     }
 
+    /* 予測表 */
     .forecast {
-      border-radius: 12px;
+      width: 100%;
+      min-width: 0;
+      height: 100%;
+      background: #ffffff;
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      height: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      background: #ffffff;
     }
 
     thead {
-      height: 42px;
+      height: clamp(44px, 7vh, 58px);
+    }
+
+    thead tr {
+      height: 100%;
     }
 
     th {
-      font-size: clamp(16px, 2.2vw, 21px);
+      height: 100%;
+      padding: 4px clamp(3px, 1vw, 10px);
+      background: var(--table-blue);
+      color: #ffffff;
+      border-right: 1px solid rgba(255, 255, 255, 0.22);
+      font-size: clamp(21px, 2.8vw, 31px);
+      font-weight: 800;
+      line-height: 1.05;
+      text-align: center;
+      vertical-align: middle;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    th:last-child {
+      border-right: none;
+    }
+
+    tbody {
+      height: calc(100% - clamp(44px, 7vh, 58px));
+    }
+
+    tbody tr {
+      height: calc(100% / 6);
     }
 
     td {
-      font-size: clamp(14px, 1.9vw, 18px);
-      padding-top: 2px;
-      padding-bottom: 2px;
+      padding: 3px clamp(3px, 1vw, 10px);
+      border-bottom: 1px solid #cfd6dd;
+      font-size: clamp(22px, 3.2vw, 36px);
+      font-weight: 700;
+      line-height: 1;
+      text-align: center;
+      vertical-align: middle;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .footer {
-      border-radius: 12px;
-      font-size: clamp(11px, 1.6vw, 15px);
+    tbody tr:nth-child(even) {
+      background: #f5f8fc;
     }
-  }
-</style>
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    th:nth-child(1),
+    td:nth-child(1) {
+      width: 28% !important;
+    }
+
+    th:nth-child(2),
+    td:nth-child(2) {
+      width: 25% !important;
+    }
+
+    th:nth-child(3),
+    td:nth-child(3) {
+      width: 47% !important;
+    }
+
+    td:nth-child(2),
+    td:nth-child(3) {
+      font-weight: 800;
+    }
+
+    /* フッター */
+    .footer {
+      width: 100%;
+      min-width: 0;
+      height: 100%;
+      padding: 0 clamp(8px, 2vw, 18px);
+      background: #ffffff;
+      border-radius: var(--radius);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #555555;
+      font-size: clamp(12px, 1.8vw, 17px);
+      font-weight: 600;
+      line-height: 1.1;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .error {
+      color: #d00000 !important;
+      font-weight: 800 !important;
+    }
+
+    /* 横幅が狭い場合 */
+    @media screen and (max-width: 720px) {
+      body {
+        grid-template-rows:
+          clamp(50px, 9vh, 64px)
+          clamp(122px, 22vh, 160px)
+          minmax(0, 1fr)
+          clamp(30px, 5vh, 38px);
+      }
+
+      .header {
+        padding: 0 14px;
+        font-size: clamp(18px, 4vw, 26px);
+      }
+
+      #clock {
+        font-size: clamp(17px, 3.6vw, 24px);
+      }
+
+      .current-title {
+        font-size: clamp(17px, 3.6vw, 25px);
+      }
+
+      .current-main {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+        column-gap: 10px;
+      }
+
+      .current-value {
+        font-size: clamp(58px, 11vh, 86px);
+      }
+
+      .current-level {
+        font-size: clamp(27px, 5.5vh, 42px);
+      }
+
+      th {
+        font-size: clamp(17px, 3.5vw, 23px);
+      }
+
+      td {
+        font-size: clamp(18px, 3.8vw, 27px);
+      }
+    }
+
+    /* 高さが低い埋め込み枠 */
+    @media screen and (max-height: 700px) {
+      body {
+        grid-template-rows:
+          54px
+          128px
+          minmax(0, 1fr)
+          32px;
+        gap: 6px;
+        padding: 6px;
+      }
+
+      .header,
+      .current,
+      .forecast,
+      .footer {
+        border-radius: 12px;
+      }
+
+      .header {
+        font-size: clamp(20px, 3vw, 29px);
+      }
+
+      #clock {
+        font-size: clamp(18px, 2.7vw, 26px);
+      }
+
+      .current {
+        padding: 5px 15px;
+      }
+
+      .current-title {
+        font-size: clamp(18px, 2.5vw, 26px);
+      }
+
+      .current-value {
+        font-size: clamp(64px, 12vh, 88px);
+      }
+
+      .current-level {
+        font-size: clamp(31px, 5.8vh, 46px);
+      }
+
+      thead {
+        height: 40px;
+      }
+
+      th {
+        font-size: clamp(17px, 2.2vw, 23px);
+      }
+
+      td {
+        padding-top: 1px;
+        padding-bottom: 1px;
+        font-size: clamp(18px, 2.5vw, 27px);
+      }
+
+      .footer {
+        font-size: clamp(11px, 1.5vw, 15px);
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -375,16 +364,11 @@
   </div>
 
   <div class="current" id="currentPanel">
-    <div class="current-title">
-      現在の暑さ指数（WBGT）
-    </div>
+    <div class="current-title">現在の暑さ指数（WBGT）</div>
 
-    <div id="wbgtNow" class="current-value">
-      --
-    </div>
-
-    <div id="wbgtLevel" class="current-level">
-      取得中...
+    <div class="current-main">
+      <div id="wbgtNow" class="current-value">--</div>
+      <div id="wbgtLevel" class="current-level">取得中...</div>
     </div>
   </div>
 
@@ -393,24 +377,20 @@
       <thead>
         <tr>
           <th>時刻</th>
-<th>WBGT</th>
-<th>警戒レベル</th>
+          <th>WBGT</th>
+          <th>警戒レベル</th>
         </tr>
       </thead>
 
       <tbody id="forecastBody">
         <tr>
-          <td colspan="3">
-            WBGTデータ取得中...
-          </td>
+          <td colspan="3">WBGTデータ取得中...</td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <div class="footer" id="footer">
-    環境省WBGT予測値 東京44132
-  </div>
+  <div class="footer" id="footer">環境省WBGT予測値 東京44132</div>
 
   <script>
     "use strict";
@@ -419,15 +399,13 @@
 
     function updateClock() {
       const now = new Date();
-
-      const timeText = now.toLocaleTimeString("ja-JP", {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false
-      });
-
-      document.getElementById("clock").textContent = timeText;
+      document.getElementById("clock").textContent =
+        now.toLocaleTimeString("ja-JP", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false
+        });
     }
 
     function getLevel(value) {
@@ -452,8 +430,8 @@
       if (value >= 25) {
         return {
           text: "警戒",
-          color: "#f9a825",
-          borderColor: "#f9a825",
+          color: "#f57f00",
+          borderColor: "#f57f00",
           backgroundColor: "#fffbea"
         };
       }
@@ -522,9 +500,7 @@
           .replace(/\s/g, "")
           .toLowerCase();
 
-        const exactIndex =
-          normalizedHeaders.indexOf(normalizedCandidate);
-
+        const exactIndex = normalizedHeaders.indexOf(normalizedCandidate);
         if (exactIndex !== -1) {
           return exactIndex;
         }
@@ -536,9 +512,7 @@
             .replace(/\s/g, "")
             .toLowerCase();
 
-          if (
-            normalizedHeaders[i].includes(normalizedCandidate)
-          ) {
+          if (normalizedHeaders[i].includes(normalizedCandidate)) {
             return i;
           }
         }
@@ -560,10 +534,8 @@
       }
 
       if (/^\d{3,4}$/.test(timeValue)) {
-        timeValue =
-          timeValue.padStart(4, "0").slice(0, 2) +
-          ":" +
-          timeValue.padStart(4, "0").slice(2, 4);
+        const paddedTime = timeValue.padStart(4, "0");
+        timeValue = paddedTime.slice(0, 2) + ":" + paddedTime.slice(2, 4);
       }
 
       const normalizedDate = dateValue
@@ -572,10 +544,7 @@
         .replace(/日/g, "")
         .replace(/-/g, "/");
 
-      const match = normalizedDate.match(
-        /(\d{4})\/(\d{1,2})\/(\d{1,2})/
-      );
-
+      const match = normalizedDate.match(/(\d{4})\/(\d{1,2})\/(\d{1,2})/);
       if (!match) {
         return null;
       }
@@ -583,31 +552,12 @@
       const year = Number(match[1]);
       const month = Number(match[2]) - 1;
       const day = Number(match[3]);
-
-      const timeMatch = timeValue.match(
-        /(\d{1,2}):?(\d{2})?/
-      );
-
+      const timeMatch = timeValue.match(/(\d{1,2}):?(\d{2})?/);
       const hour = timeMatch ? Number(timeMatch[1]) : 0;
-      const minute =
-        timeMatch && timeMatch[2]
-          ? Number(timeMatch[2])
-          : 0;
+      const minute = timeMatch && timeMatch[2] ? Number(timeMatch[2]) : 0;
+      const result = new Date(year, month, day, hour, minute, 0);
 
-      const result = new Date(
-        year,
-        month,
-        day,
-        hour,
-        minute,
-        0
-      );
-
-      if (Number.isNaN(result.getTime())) {
-        return null;
-      }
-
-      return result;
+      return Number.isNaN(result.getTime()) ? null : result;
     }
 
     function parseWbgtCsv(csvText) {
@@ -621,22 +571,14 @@
         });
 
       if (lines.length < 2) {
-        throw new Error(
-          "CSVに表示可能なデータがありません"
-        );
+        throw new Error("CSVに表示可能なデータがありません");
       }
 
       let headerRowIndex = -1;
       let headers = [];
 
-      for (
-        let rowIndex = 0;
-        rowIndex < Math.min(lines.length, 20);
-        rowIndex++
-      ) {
-        const possibleHeaders =
-          parseCsvLine(lines[rowIndex]);
-
+      for (let rowIndex = 0; rowIndex < Math.min(lines.length, 20); rowIndex++) {
+        const possibleHeaders = parseCsvLine(lines[rowIndex]);
         const hasWbgt = possibleHeaders.some(function(value) {
           return /wbgt|暑さ指数/i.test(value);
         });
@@ -649,55 +591,28 @@
       }
 
       if (headerRowIndex === -1) {
-        throw new Error(
-          "CSVの見出し行を判定できません"
-        );
+        throw new Error("CSVの見出し行を判定できません");
       }
 
-      const dateIndex = findColumnIndex(headers, [
-        "年月日",
-        "日付",
-        "date"
-      ]);
-
-      const timeIndex = findColumnIndex(headers, [
-        "時刻",
-        "時間",
-        "time",
-        "hour"
-      ]);
-
-      const wbgtIndex = findColumnIndex(headers, [
-        "WBGT",
-        "暑さ指数",
-        "予測値"
-      ]);
+      const dateIndex = findColumnIndex(headers, ["年月日", "日付", "date"]);
+      const timeIndex = findColumnIndex(headers, ["時刻", "時間", "time", "hour"]);
+      const wbgtIndex = findColumnIndex(headers, ["WBGT", "暑さ指数", "予測値"]);
 
       if (wbgtIndex === -1) {
-        throw new Error(
-          "CSV内にWBGT列が見つかりません"
-        );
+        throw new Error("CSV内にWBGT列が見つかりません");
       }
 
       const records = [];
 
-      for (
-        let rowIndex = headerRowIndex + 1;
-        rowIndex < lines.length;
-        rowIndex++
-      ) {
+      for (let rowIndex = headerRowIndex + 1; rowIndex < lines.length; rowIndex++) {
         const columns = parseCsvLine(lines[rowIndex]);
-
         const wbgtText = columns[wbgtIndex];
 
         if (wbgtText === undefined) {
           continue;
         }
 
-        const wbgtValue = Number(
-          String(wbgtText).replace(/[^\d.-]/g, "")
-        );
-
+        const wbgtValue = Number(String(wbgtText).replace(/[^\d.-]/g, ""));
         if (!Number.isFinite(wbgtValue)) {
           continue;
         }
@@ -707,30 +622,18 @@
         if (dateIndex !== -1) {
           dateTime = parseDateTime(
             columns[dateIndex],
-            timeIndex !== -1
-              ? columns[timeIndex]
-              : ""
+            timeIndex !== -1 ? columns[timeIndex] : ""
           );
         }
 
-        if (
-          !dateTime &&
-          timeIndex !== -1 &&
-          columns[timeIndex]
-        ) {
+        if (!dateTime && timeIndex !== -1 && columns[timeIndex]) {
           const today = new Date();
-
           const dateString =
-            today.getFullYear() +
-            "/" +
-            String(today.getMonth() + 1).padStart(2, "0") +
-            "/" +
+            today.getFullYear() + "/" +
+            String(today.getMonth() + 1).padStart(2, "0") + "/" +
             String(today.getDate()).padStart(2, "0");
 
-          dateTime = parseDateTime(
-            dateString,
-            columns[timeIndex]
-          );
+          dateTime = parseDateTime(dateString, columns[timeIndex]);
         }
 
         if (!dateTime) {
@@ -748,9 +651,7 @@
       });
 
       if (records.length === 0) {
-        throw new Error(
-          "日時とWBGT値を読み取れませんでした"
-        );
+        throw new Error("日時とWBGT値を読み取れませんでした");
       }
 
       return records;
@@ -758,30 +659,25 @@
 
     function selectCurrentRecord(records) {
       const now = new Date();
-
-      let pastRecords = records.filter(function(record) {
+      const pastRecords = records.filter(function(record) {
         return record.dateTime <= now;
       });
 
-      if (pastRecords.length > 0) {
-        return pastRecords[pastRecords.length - 1];
-      }
-
-      return records[0];
+      return pastRecords.length > 0
+        ? pastRecords[pastRecords.length - 1]
+        : records[0];
     }
 
     function selectForecastRecords(records, currentRecord) {
-      const futureRecords = records.filter(function(record) {
-        return record.dateTime > currentRecord.dateTime;
-      });
-
-      return futureRecords.slice(0, 6);
+      return records
+        .filter(function(record) {
+          return record.dateTime > currentRecord.dateTime;
+        })
+        .slice(0, 6);
     }
 
     function formatDateTime(dateTime) {
-      return dateTime.toLocaleString("ja-JP", {
-        month: "numeric",
-        day: "numeric",
+      return dateTime.toLocaleTimeString("ja-JP", {
         hour: "2-digit",
         minute: "2-digit",
         hour12: false
@@ -790,88 +686,60 @@
 
     function displayCurrent(record) {
       const level = getLevel(record.wbgt);
-      const currentPanel =
-        document.getElementById("currentPanel");
+      const currentPanel = document.getElementById("currentPanel");
+      const wbgtNow = document.getElementById("wbgtNow");
+      const wbgtLevel = document.getElementById("wbgtLevel");
 
-      document.getElementById("wbgtNow").textContent =
-        record.wbgt.toFixed(1);
-
-      document.getElementById("wbgtLevel").textContent =
-        level.text;
-
-      document.getElementById("wbgtNow").style.color =
-        level.color;
-
-      document.getElementById("wbgtLevel").style.color =
-        level.color;
-
-      currentPanel.style.borderColor =
-        level.borderColor;
-
-      currentPanel.style.backgroundColor =
-        level.backgroundColor;
+      wbgtNow.textContent = record.wbgt.toFixed(1);
+      wbgtLevel.textContent = level.text;
+      wbgtNow.style.color = level.color;
+      wbgtLevel.style.color = level.color;
+      currentPanel.style.borderColor = level.borderColor;
+      currentPanel.style.backgroundColor = level.backgroundColor;
     }
 
     function displayForecast(records) {
-      const forecastBody =
-        document.getElementById("forecastBody");
-
+      const forecastBody = document.getElementById("forecastBody");
       forecastBody.innerHTML = "";
 
       if (records.length === 0) {
         forecastBody.innerHTML =
-          '<tr><td colspan="3">' +
-          "これより先の予測値がありません" +
-          "</td></tr>";
-
+          '<tr><td colspan="3">これより先の予測値がありません</td></tr>';
         return;
       }
 
       records.forEach(function(record) {
         const level = getLevel(record.wbgt);
         const row = document.createElement("tr");
-
         const timeCell = document.createElement("td");
         const wbgtCell = document.createElement("td");
         const levelCell = document.createElement("td");
 
-        timeCell.textContent =
-          formatDateTime(record.dateTime);
-
-        wbgtCell.textContent =
-          record.wbgt.toFixed(1);
-
-        levelCell.textContent =
-          level.text;
-
+        timeCell.textContent = formatDateTime(record.dateTime);
+        wbgtCell.textContent = record.wbgt.toFixed(1);
+        levelCell.textContent = level.text;
         wbgtCell.style.color = level.color;
-        wbgtCell.style.fontWeight = "bold";
-
         levelCell.style.color = level.color;
-        levelCell.style.fontWeight = "bold";
 
         row.appendChild(timeCell);
         row.appendChild(wbgtCell);
         row.appendChild(levelCell);
-
         forecastBody.appendChild(row);
       });
     }
 
     function showError(message) {
-      document.getElementById("wbgtNow").textContent =
-        "--";
+      const currentPanel = document.getElementById("currentPanel");
+      const levelElement = document.getElementById("wbgtLevel");
 
-      const levelElement =
-        document.getElementById("wbgtLevel");
-
+      document.getElementById("wbgtNow").textContent = "--";
       levelElement.textContent = "取得失敗";
       levelElement.className = "current-level error";
+      currentPanel.style.borderColor = "#d00000";
+      currentPanel.style.backgroundColor = "#fff1f1";
 
       document.getElementById("forecastBody").innerHTML =
-        '<tr><td colspan="3" class="error">' +
-        message +
-        "</td></tr>";
+        '<tr><td colspan="3" class="error">' + message + "</td></tr>";
 
       document.getElementById("footer").textContent =
         "wbgt.csvの配置とGitHub Actionsを確認してください";
@@ -879,33 +747,19 @@
 
     async function loadWbgtData() {
       try {
-        const requestUrl =
-          WBGT_LOCAL_URL + "?t=" + Date.now();
-
-        const response = await fetch(requestUrl, {
-          cache: "no-store"
-        });
+        const requestUrl = WBGT_LOCAL_URL + "?t=" + Date.now();
+        const response = await fetch(requestUrl, { cache: "no-store" });
 
         if (!response.ok) {
-          throw new Error(
-            "wbgt.csvを取得できません HTTP " +
-            response.status
-          );
+          throw new Error("wbgt.csvを取得できません HTTP " + response.status);
         }
 
         const csvText = await response.text();
         const records = parseWbgtCsv(csvText);
-        const currentRecord =
-          selectCurrentRecord(records);
+        const currentRecord = selectCurrentRecord(records);
 
         displayCurrent(currentRecord);
-
-        displayForecast(
-          selectForecastRecords(
-            records,
-            currentRecord
-          )
-        );
+        displayForecast(selectForecastRecords(records, currentRecord));
 
         document.getElementById("footer").textContent =
           "環境省WBGT予測値 東京44132　更新：" +
